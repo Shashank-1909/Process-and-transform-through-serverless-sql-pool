@@ -1,0 +1,20 @@
+{
+	"name": "creating_view_silver_trip_data",
+	"properties": {
+		"folder": {
+			"name": "external_table_silver_level"
+		},
+		"content": {
+			"query": "use nyc_warehouse\n\nGO\n\nif object_id('silver.trip_data_vw') is not null drop view silver.trip_data_vw\n\nGO\n\ncreate view silver.trip_data_vw\n\nAS\n\nselect * from\n\nOPENROWSET(\n            bulk 'processed/trip_data/**',\n\n            data_source= 'nyc_taxi_ds1',\n\n            FORMAT='parquet'\n\n        ) as result\n;\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_warehouse",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

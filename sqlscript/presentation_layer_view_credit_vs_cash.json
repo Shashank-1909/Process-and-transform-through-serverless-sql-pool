@@ -1,0 +1,20 @@
+{
+	"name": "presentation_layer_view_credit_vs_cash",
+	"properties": {
+		"folder": {
+			"name": "presentation_layer_view"
+		},
+		"content": {
+			"query": "use nyc_warehouse\n\nGO\n\nif object_id('gold.credit_vs_cash_vw') is not null drop view gold.credit_vs_cash_vw\n\nGO\n\ncreate view gold.credit_vs_cash_vw\n\nAS\n\nselect * from\n\nOPENROWSET(\n            bulk 'presentation/credit_vs_cash/**',\n\n            data_source= 'nyc_taxi_ds1',\n\n            FORMAT='parquet'\n\n        ) as result\n;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_warehouse",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

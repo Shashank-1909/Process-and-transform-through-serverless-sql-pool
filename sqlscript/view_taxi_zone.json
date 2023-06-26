@@ -1,0 +1,20 @@
+{
+	"name": "view_taxi_zone",
+	"properties": {
+		"folder": {
+			"name": "Views_for_quering_bronze_layer"
+		},
+		"content": {
+			"query": "-- we can use the view created in this script to create the table which wil represent data in the silver layer\n\nuse nyc_warehouse\n\nGO\n\n-- The view in the beonze layer (bronze.taxi_zone_vw) is created by the help of a query using openrowset.\n\nif object_id('bronze.taxi_zone_vw') is not null drop view bronze.taxi_zone_vw\n\nGO\n\ncreate view bronze.taxi_zone_vw\n\nAS\n\nselect * FROM\n\nopenrowset\n    (\n    bulk 'unprocessed/taxi_zone.csv',\n\n    format='csv',\n\n    data_source='nyc_taxi_ds1',\n\n    PARSER_VERSION='2.0',\n\n    FIRSTROW=2\n\n    )\n\n    WITH\n    (\n        location_id smallint 1,\n\n        borough varchar(15) 2,\n\n        zone varchar(50) 3,\n\n        service_zone varchar(15) 4\n\n    ) as result\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_warehouse",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

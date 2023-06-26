@@ -1,0 +1,20 @@
+{
+	"name": "execution_of_procedure_taxi_demand",
+	"properties": {
+		"folder": {
+			"name": "presentation_layer_view"
+		},
+		"content": {
+			"query": "use nyc_warehouse\n\nGO\n\nexec gold.sp_external_table_taxi_demand '2020','01'\n\nGO\n\nexec gold.sp_external_table_taxi_demand '2020','02'\n\nGO\n\nexec gold.sp_external_table_taxi_demand '2020','03'\n\nGO\n\nexec gold.sp_external_table_taxi_demand '2020','04'\n\nGO\n\nexec gold.sp_external_table_taxi_demand '2020','05'\n\nGO\n\nexec gold.sp_external_table_taxi_demand '2020','06'\n\nGO\n\nexec gold.sp_external_table_taxi_demand '2020','07'\n\nGO\n\nexec gold.sp_external_table_taxi_demand '2020','08'\n\nGO\n\nexec gold.sp_external_table_taxi_demand '2020','09'\n\nGO\n\nexec gold.sp_external_table_taxi_demand '2020','10'\n\nGO\n\nexec gold.sp_external_table_taxi_demand '2020','11'\n\nGO\n\nexec gold.sp_external_table_taxi_demand '2020','12'\n\nGO\n\nexec gold.sp_external_table_taxi_demand '2021','01'\n\nGO\n\nexec gold.sp_external_table_taxi_demand '2021','02'\n\nGO\n\nexec gold.sp_external_table_taxi_demand '2021','03'\n\nGO\n\nexec gold.sp_external_table_taxi_demand '2021','04'\n\nGO\n\nexec gold.sp_external_table_taxi_demand '2021','05'\n\nGO\n\nexec gold.sp_external_table_taxi_demand '2021','06'\n\nGO\n\nexec gold.sp_external_table_taxi_demand '2021','07'\n\nGO",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_warehouse",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

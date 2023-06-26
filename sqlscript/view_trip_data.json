@@ -1,0 +1,20 @@
+{
+	"name": "view_trip_data",
+	"properties": {
+		"folder": {
+			"name": "Views_for_quering_bronze_layer"
+		},
+		"content": {
+			"query": "-- we can use the view created in this script to create the table which will represent data in the silver layer\n\nuse nyc_warehouse\n\nGO\n\n-- The view in the bronze layer (bronze.trip_data_vw) is created by the help of a query using openrowset.\n\nif object_id('bronze.trip_data_vw') is not null drop view bronze.trip_data_vw\n\nGO\n\ncreate view bronze.trip_data_vw\n\nAS\n\nselect result.filepath(1) as year_of_trip,result.filepath(2) as month_of_trip,*  FROM\n\nopenrowset\n    (\n    bulk 'unprocessed/trip_data_green_csv/year=*/month=*/*',\n\n    format='csv',\n\n    data_source='nyc_taxi_ds1',\n\n    PARSER_VERSION='2.0',\n\n    HEADER_ROW=True\n\n    )\n\n    WITH\n    (\n        vendor_id tinyint 1,\n\n        lpep_pickup_datetime datetime2(7) 2,\n\n        lpep_dropoff_datetime datetime2(7) 3,\n\n        store_and_fwd_flag varchar(1) 4,\n\n        rate_code_id tinyint 5,\n\n        pu_location_id smallint 6,\n\n        do_location_id smallint 7,\n\n        passenger_count smallint 8,\n\n        trip_distance float 9,\n\n        fare_amount float 10,\n\n        extra float 11,\n\n        mta_tax\tfloat 12,\n\n        tip_amount float 13,\n\n        tolls_amount float 14,\n\n        improvement_surcharge float 16,\n\n        total_amount float 17,\n\n        payment_type tinyint 18,\n\n        trip_type tinyint 19,\n\n        congestion_surcharge float 20\n        \n    ) as result\n\nwhere convert(date, lpep_pickup_datetime) not like '2021-08%'\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_warehouse",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

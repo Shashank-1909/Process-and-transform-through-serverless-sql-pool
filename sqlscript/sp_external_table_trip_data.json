@@ -1,0 +1,20 @@
+{
+	"name": "sp_external_table_trip_data",
+	"properties": {
+		"folder": {
+			"name": "external_table_silver_level"
+		},
+		"content": {
+			"query": "use nyc_warehouse\n\nGO\n\ncreate or alter procedure silver.sp_external_table_trip_data @year varchar(4), @month varchar(2)\n\nas\n\nBEGIN\n    declare @variable1 nvarchar(max), @variable2 nvarchar(max);\n\n    set @variable1 = \n\n    'create external table silver.ext_table_trip_data_' + @year + '_' + @month +\n    ' with (\n                location = ''processed/trip_data/year=' + @year + '/month=' + @month + ''',\n\n                data_source = nyc_taxi_ds1,\n\n                file_format = external_file_format_parquet\n        )\n\n        as\n\n        select * from bronze.trip_data_vw\n\n        where year_of_trip = ''' + @year + ''' and month_of_trip = ''' + @month + '''';\n\nprint(@variable1)\n\nexec sp_executesql @variable1;\n\nset @variable2 = 'drop external table silver.ext_table_trip_data_' + @year + '_' + @month;\n\nprint(@variable2)\n\nexec sp_executesql @variable2;\n\nEND;\n\n\n\n\n\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_warehouse",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

@@ -1,0 +1,20 @@
+{
+	"name": "presentation_layer_view_taxi_demand",
+	"properties": {
+		"folder": {
+			"name": "presentation_layer_view"
+		},
+		"content": {
+			"query": "use nyc_warehouse\n\nGO\n\nif object_id('gold.taxi_demand_vw') is not null drop view gold.taxi_demand_vw\n\nGO\n\ncreate view gold.taxi_demand_vw\n\nAS\n\nselect * from \n\nopenrowset\n\n    (\n        bulk 'presentation/taxi_demand/**',\n        data_source = 'nyc_taxi_ds1',\n        format = 'parquet'\n    ) as result\n\nselect * from gold.taxi_demand_vw",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_warehouse",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

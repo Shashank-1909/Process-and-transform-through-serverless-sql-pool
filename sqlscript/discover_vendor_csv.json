@@ -1,0 +1,20 @@
+{
+	"name": "discover_vendor_csv",
+	"properties": {
+		"folder": {
+			"name": "data_discovery"
+		},
+		"content": {
+			"query": "use discoverydb\n\nGO\n\n-- usomg the openrowset function to query the data in vendor.csv file\n\nselect * FROM\n\nopenrowset\n    (\n    bulk 'vendor.csv',\n\n    format='csv',\n\n    data_source='nyc_taxi_data_source',\n\n    PARSER_VERSION='2.0',\n\n    HEADER_ROW=True\n\n    ) as result\n\n--  user checking the alloted data type to each feild by using a stored procedure named 'sp_describe_first_result_set'\n\nexec sp_describe_first_result_set N'select * FROM\n\nopenrowset\n    (\n    bulk ''vendor.csv'',\n\n    format=''csv'',\n\n    data_source=''nyc_taxi_data_source'',\n\n    PARSER_VERSION=''2.0'',\n\n    HEADER_ROW=True\n\n    ) as result'\n\n\n-- as it can be seen that the data types alloted to the data present in the field is more than what is required, we can change the datatypes so that\n\n-- processing is less loaded.\n\nselect * FROM\n\nopenrowset\n    (\n    bulk 'vendor.csv',\n\n    format='csv',\n\n    data_source='nyc_taxi_data_source',\n\n    PARSER_VERSION='2.0',\n\n    HEADER_ROW=True\n\n    )\n\n    WITH\n    (\n    vendor_id smallint 1,\n\n    vendor_name varchar(100) 2\n    \n    ) as result\n\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "discoverydb",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

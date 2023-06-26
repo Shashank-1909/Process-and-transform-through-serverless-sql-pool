@@ -1,0 +1,20 @@
+{
+	"name": "view_trip_type",
+	"properties": {
+		"folder": {
+			"name": "Views_for_quering_bronze_layer"
+		},
+		"content": {
+			"query": "-- we can use the view created in this script to create the table which wil represent data in the silver layer\n\nuse nyc_warehouse\n\nGO\n\n-- The view in the bronze layer (bronze.trip_type_vw) is created by the help of a query using openrowset.\n\nif object_id('bronze.trip_type_vw') is not null drop view bronze.trip_type_vw\n\nGO\n\ncreate view bronze.trip_type_vw\n\nAS\n\nselect * FROM\n\nopenrowset\n    (\n    bulk 'unprocessed/trip_type.tsv',\n\n    format='csv',\n\n    data_source='nyc_taxi_ds1',\n\n    PARSER_VERSION='2.0',\n\n    HEADER_ROW=True,\n\n    FIELDTERMINATOR = '\\t'\n\n    )\n\n    WITH\n    (\n        trip_type tinyint 1,\n        \n        trip_type_description varchar(20) 2\n        \n    ) as result\n\n    \n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_warehouse",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

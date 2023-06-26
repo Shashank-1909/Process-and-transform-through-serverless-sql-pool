@@ -1,0 +1,20 @@
+{
+	"name": "discover_calendar_csv",
+	"properties": {
+		"folder": {
+			"name": "data_discovery"
+		},
+		"content": {
+			"query": "use discoverydb\n\nGO\n\n-- usomg the openrowset function to query the data in calendar.csv file\n\nselect * FROM\n\nopenrowset\n    (\n    bulk 'calendar.csv',\n\n    format='csv',\n\n    data_source='nyc_taxi_data_source',\n\n    PARSER_VERSION='2.0',\n\n    HEADER_ROW=True\n\n    ) as result\n\n--  user checking the alloted data type to each feild by using a stored procedure named 'sp_describe_first_result_set'\n\nexec sp_describe_first_result_set N'select * FROM\n\nopenrowset\n    (\n    bulk ''calendar.csv'',\n\n    format=''csv'',\n\n    data_source=''nyc_taxi_data_source'',\n\n    PARSER_VERSION=''2.0'',\n\n    HEADER_ROW=True\n\n    ) as result'\n\n\n-- as it can be seen that the data types alloted to the data present in the field is more than what is required, we can change the datatypes so that\n\n-- processing is less loaded.\n\nselect * FROM\n\nopenrowset\n    (\n    bulk 'calendar.csv',\n\n    format='csv',\n\n    data_source='nyc_taxi_data_source',\n\n    PARSER_VERSION='2.0',\n\n    HEADER_ROW=True\n\n    )\n\n    WITH\n    (\n        date_key INT,\n        date date,\n        year smallint,\n        month tinyint,\n        day smallint,\n        day_name varchar(10),\n        day_of_year smallint,\n        week_of_month tinyint,\n        week_of_year tinyint,\n        month_name varchar(10),\n        year_month int,\n        year_week int\n    ) as result\n\n-- its a good practice to check whether data contains duplicate rows or not\n\nselect date_key,count(1) as count_of_rows\n\nFROM\n\nopenrowset\n    (\n    bulk 'calendar.csv',\n\n    format='csv',\n\n    data_source='nyc_taxi_data_source',\n\n    PARSER_VERSION='2.0',\n\n    HEADER_ROW=True\n\n    ) as result\n\ngroup by date_key\n\nhaving count(1)>1;\n\n\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "discoverydb",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

@@ -1,0 +1,19 @@
+{
+	"name": "delete_processed_files_ls",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "nyctaxiprojectws-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "processed",
+				"fileSystem": "nyctaxiprojectcontainer1"
+			}
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

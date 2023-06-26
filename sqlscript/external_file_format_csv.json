@@ -1,0 +1,20 @@
+{
+	"name": "external_file_format_csv",
+	"properties": {
+		"folder": {
+			"name": "external_file_format_creation"
+		},
+		"content": {
+			"query": "-- in order to create external tables external file format is one of the primary requirements. The below code will\n\n-- create external file format for  csv file\n\nuse nyc_warehouse\n\nGO\n\nif not exists (select * from sys.external_file_formats where name = 'external_file_format_csv')\n\ncreate external file format external_file_format_csv\n\nWITH\n    (\n        format_type = DELIMITEDTEXT,\n        FORMAT_OPTIONS\n        (\n            FIELD_TERMINATOR=',',\n            STRING_DELIMITER='\"',\n            FIRST_ROW=2,\n            USE_TYPE_DEFAULT=False,\n            encoding='UTF8',\n            PARSER_VERSION='2.0'\n        )\n    )\nGO\n\nIF not exists (select * from sys.external_file_formats where name = 'external_file_format_parquet')\n\ncreate external file format external_file_format_parquet\n\nWITH\n\n    (\n        format_type=PARQUET,\n        DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'\n    )\n\nGO\n\nIF not exists (select * from sys.external_file_formats where name = 'external_file_format_delta')\n\ncreate external file format external_file_format_delta\n\nWITH\n\n    (\n        format_type=DELTA,\n        DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'\n    )\n\ngo\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_warehouse",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

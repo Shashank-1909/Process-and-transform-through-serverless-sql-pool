@@ -1,0 +1,20 @@
+{
+	"name": "exec_sp_external_table_trip_data",
+	"properties": {
+		"folder": {
+			"name": "external_table_silver_level"
+		},
+		"content": {
+			"query": "use nyc_warehouse\n\nGO\n\nexec silver.sp_external_table_trip_data '2020','01';\n\nexec silver.sp_external_table_trip_data '2020','02';\n\nexec silver.sp_external_table_trip_data '2020','03';\n\nexec silver.sp_external_table_trip_data '2020','04';\n\nexec silver.sp_external_table_trip_data '2020','05';\n\nexec silver.sp_external_table_trip_data '2020','06';\n\nexec silver.sp_external_table_trip_data '2020','07';\n\nexec silver.sp_external_table_trip_data '2020','08';\n\nexec silver.sp_external_table_trip_data '2020','09';\n\nexec silver.sp_external_table_trip_data '2020','10';\n\nexec silver.sp_external_table_trip_data '2020','11';\n\nexec silver.sp_external_table_trip_data '2020','12';\n\nexec silver.sp_external_table_trip_data '2021','01';\n\nexec silver.sp_external_table_trip_data '2021','02';\n\nexec silver.sp_external_table_trip_data '2021','03';\n\nexec silver.sp_external_table_trip_data '2021','04';\n\nexec silver.sp_external_table_trip_data '2021','05';\n\nexec silver.sp_external_table_trip_data '2021','06';\n\nexec silver.sp_external_table_trip_data '2021','07';\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_warehouse",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

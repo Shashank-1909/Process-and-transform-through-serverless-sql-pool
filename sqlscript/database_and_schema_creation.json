@@ -1,0 +1,20 @@
+{
+	"name": "database_and_schema_creation",
+	"properties": {
+		"folder": {
+			"name": "Medallion_schema_creation"
+		},
+		"content": {
+			"query": "-- creating the logical warehouse, the schemas created in it wolud represent the layers(bronze, silver, gold)\n\n--  of the medallion architecture\n\ncreate database nyc_warehouse collate Latin1_General_100_CI_AI_SC_UTF8\n\nGO\n\nuse nyc_warehouse\n\nGO\n\ncreate schema bronze\n\nGO\n\ncreate schema silver\n\nGO\n\ncreate schema gold\n\nGO",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_warehouse",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

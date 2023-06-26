@@ -1,0 +1,20 @@
+{
+	"name": "view_calendar",
+	"properties": {
+		"folder": {
+			"name": "Views_for_quering_bronze_layer"
+		},
+		"content": {
+			"query": "-- we can use the view created in this script to create the table which will represent data in the silver layer\n\nuse nyc_warehouse\n\nGO\n\n-- The view in the bronze layer (bronze.calendar_vw) is created by the help of a query using openrowset.The \n\n-- query on which the calendar_vw is created has the datatypes set according to the requirement\n\nif object_id('bronze.calendar_vw') is not null drop view bronze.calendar_vw\n\nGO\n\ncreate view bronze.calendar_vw\n\nAS\n\nselect * FROM\n\nopenrowset\n    (\n    bulk 'unprocessed/calendar.csv',\n\n    format='csv',\n\n    data_source='nyc_taxi_ds1',\n\n    PARSER_VERSION='2.0',\n\n    HEADER_ROW=True\n\n    )\n\n    WITH\n    (\n        date_key INT,\n\n        date date,\n\n        year smallint,\n\n        month tinyint,\n\n        day smallint,\n\n        day_name varchar(10),\n\n        day_of_year smallint,\n\n        week_of_month tinyint,\n\n        week_of_year tinyint,\n\n        month_name varchar(10),\n\n        year_month int,\n\n        year_week int\n\n    ) as result\n\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_warehouse",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

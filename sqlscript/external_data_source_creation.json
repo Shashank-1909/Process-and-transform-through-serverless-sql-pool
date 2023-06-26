@@ -1,0 +1,20 @@
+{
+	"name": "external_data_source_creation",
+	"properties": {
+		"folder": {
+			"name": "external_file_format_creation"
+		},
+		"content": {
+			"query": "-- external data source will provide the major portion of the location\n-- path\n\nuse nyc_warehouse\n\ngo\n\nif object_id('nyc_taxi_ds1') is not NULL drop external data source nyc_taxi_ds1\n\nGO\n\ncreate external data source nyc_taxi_ds1\nwith\n    (\n        location = 'abfss://nyctaxiprojectcontainer1@nyctaxiprojectsa.dfs.core.windows.net/'\n    )",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_warehouse",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

@@ -1,0 +1,20 @@
+{
+	"name": "sp_external_table_trip_type",
+	"properties": {
+		"folder": {
+			"name": "external_table_silver_level"
+		},
+		"content": {
+			"query": "use nyc_warehouse\n\nGO\n\ncreate or alter procedure silver.sp_external_table_trip_type\n\nAS\n\nBEGIN\n    if object_id('silver.ext_table_trip_type') is not null drop external table silver.ext_table_trip_type;\n\n    create external table silver.ext_table_trip_type\n    \n    WITH\n        (\n            location = 'processed/trip_type',\n            DATA_SOURCE = nyc_taxi_ds1,\n            FILE_FORMAT = external_file_format_parquet\n        )\n\n    AS\n\n    select * from bronze.trip_type_vw;\n\nEND;\n\nexec silver.sp_external_table_trip_type\n\nselect * from silver.ext_table_trip_type",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_warehouse",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

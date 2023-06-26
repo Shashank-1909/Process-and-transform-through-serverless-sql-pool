@@ -1,0 +1,20 @@
+{
+	"name": "taxi_demand_analysis",
+	"properties": {
+		"folder": {
+			"name": "presentation_layer_view"
+		},
+		"content": {
+			"query": "use nyc_warehouse\n\nGO\n\nselect\n\ntd.year_of_trip,\n\ntd.month_of_trip,\n\nconvert(date,td.lpep_pickup_datetime) as trip_date,\n\ncd.day_name,\n\ntz.borough,\n\ntt.trip_type_description,\n\ncount(1) as number_of_trips,\n\nround(avg(total_amount),2) as avg_trip_fare,\n\nround(avg(trip_distance),2) as avg_trip_distance\n\nFROM\n\nsilver.trip_data_vw td join silver.ext_table_calendar cd\n\non convert(date,td.lpep_pickup_datetime)=cd.date\n\njoin silver.ext_table_payment_type pt\n\non td.payment_type = pt.payment_type_id\n\njoin silver.ext_table_trip_type tt\n\non td.trip_type = tt.trip_type\n\njoin silver.ext_table_taxi_zone tz\n\non td.pu_location_id = tz.location_id\n\nwhere td.year_of_trip = 2020 and td.month_of_trip = 01\n\ngroup by \n\ntd.year_of_trip,\n\ntd.month_of_trip,\n\nconvert(date,td.lpep_pickup_datetime),\n\ncd.day_name,\n\ntz.borough,\n\ntt.trip_type_description;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_warehouse",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

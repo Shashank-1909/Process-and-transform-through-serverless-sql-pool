@@ -1,0 +1,228 @@
+{
+	"name": "pl_creating_external_table_processed_layer",
+	"properties": {
+		"activities": [
+			{
+				"name": "iterative_sp_execution",
+				"description": "For each activity allows the iterative execution of procedures that will create silver level external table.",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Delete_processed_layer_folder",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('silver_level_stored_procedures')",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "creation_of_processed_layer_ext_table",
+							"description": "This activity will be executing the procedures that will be creating the silver level external tables.",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": {
+									"value": "@item()",
+									"type": "Expression"
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "serverless_sql_pool_link",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "year_and_month_value",
+				"description": "The script will generate year and month value which will be required in stored procedure silver.sp_external_table_trip_data which will further create silver level external tables",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "Delete_processed_layer_folder",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "serverless_sql_pool_link",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": "use nyc_warehouse;\n\nselect distinct year_of_trip, month_of_trip\nfrom\nbronze.trip_data_vw;"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			},
+			{
+				"name": "silver_trip_data_ext_table_iterator",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "year_and_month_value",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('year_and_month_value').output.resultSets[0].Rows",
+						"type": "Expression"
+					},
+					"batchCount": 5,
+					"activities": [
+						{
+							"name": "creation_of_processed_layer_ext_table_trip_type",
+							"description": "This activity will be executing the procedures that will be creating the silver level external tables for trip_data_green.csv file.",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[silver].[sp_external_table_trip_data]",
+								"storedProcedureParameters": {
+									"month": {
+										"value": {
+											"value": "@item().month_of_trip",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"year": {
+										"value": {
+											"value": "@item().year_of_trip",
+											"type": "Expression"
+										},
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "serverless_sql_pool_link",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "silver_trip_data_view_creation",
+				"description": "All the partitions are stored in the processed layer so a view can be formed by using openrowset in order to access the data.",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "silver_trip_data_ext_table_iterator",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "serverless_sql_pool_link",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "NonQuery",
+							"text": "use nyc_warehouse;\n\nif object_id('silver.trip_data_vw') is not null drop view silver.trip_data_vw;"
+						},
+						{
+							"type": "NonQuery",
+							"text": "create view silver.trip_data_vw\n\nAS\n\nselect * from\n\nOPENROWSET(\n            bulk 'processed/trip_data/**',\n\n            data_source= 'nyc_taxi_ds1',\n\n            FORMAT='parquet'\n\n        ) as result\n;"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			},
+			{
+				"name": "Delete_processed_layer_folder",
+				"description": "In order to create the external tables each time the pipeline is executed the folder must be empty.",
+				"type": "Delete",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "delete_processed_files_ls",
+						"type": "DatasetReference"
+					},
+					"enableLogging": false,
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					}
+				}
+			}
+		],
+		"concurrency": 1,
+		"variables": {
+			"silver_level_stored_procedures": {
+				"type": "Array",
+				"defaultValue": [
+					"silver.sp_external_table_trip_type",
+					"silver.sp_external_table_payment_type",
+					"silver.sp_external_table_rate_code",
+					"silver.sp_external_table_calendar",
+					"silver.sp_external_table_taxi_zone",
+					"silver.sp_external_table_vendor"
+				]
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-06-12T08:21:15Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

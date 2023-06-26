@@ -1,0 +1,20 @@
+{
+	"name": "creating_data_source",
+	"properties": {
+		"folder": {
+			"name": "data_discovery"
+		},
+		"content": {
+			"query": "-- external data source will provide the major portion of the location\n-- path\n\nuse discoverydb\n\ngo\n\nif object_id('nyc_taxi_data_source') is not NULL drop external data source nyc_taxi_data_source\n\nGO\n\ncreate external data source nyc_taxi_data_source\n\nwith\n    (\n        location = 'abfss://nyctaxiprojectcontainer1@nyctaxiprojectsa.dfs.core.windows.net/unprocessed/'\n    )",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "discoverydb",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

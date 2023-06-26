@@ -1,0 +1,20 @@
+{
+	"name": "discovery_database_creation",
+	"properties": {
+		"folder": {
+			"name": "data_discovery"
+		},
+		"content": {
+			"query": "-- creating the database which will be used for the exploration of the\n-- of the data\n\nif not exists (select * from sys.databases where name='discoverydb')\n\ncreate database discoverydb\n\nCOLLATE Latin1_General_100_CI_AI_SC_UTF8;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

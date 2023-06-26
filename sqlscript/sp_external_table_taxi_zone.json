@@ -1,0 +1,20 @@
+{
+	"name": "sp_external_table_taxi_zone",
+	"properties": {
+		"folder": {
+			"name": "external_table_silver_level"
+		},
+		"content": {
+			"query": "use nyc_warehouse\n\nGO\n\ncreate or alter procedure silver.sp_external_table_taxi_zone\n\nAS\n\nBEGIN\n    if object_id('silver.ext_table_taxi_zone') is not null drop external table silver.ext_table_taxi_zone;\n\n    create external table silver.ext_table_taxi_zone\n\n    WITH\n    (\n        LOCATION = 'processed/taxi_zone',\n\n        data_source = nyc_taxi_ds1,\n        \n        FILE_FORMAT = external_file_format_parquet\n    )\n     as \n\n     select * from bronze.taxi_zone_vw;\nEND;\n\n-- exec silver.sp_ext_table_taxi_zone\n\nselect * from silver.ext_table_taxi_zone",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_warehouse",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

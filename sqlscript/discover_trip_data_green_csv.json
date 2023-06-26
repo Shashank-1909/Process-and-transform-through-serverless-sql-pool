@@ -1,0 +1,20 @@
+{
+	"name": "discover_trip_data_green_csv",
+	"properties": {
+		"folder": {
+			"name": "data_discovery"
+		},
+		"content": {
+			"query": "use discoverydb\n\nGO\n\n-- usomg the openrowset function to query the data in trip_data_green.csv file\n\nselect * FROM\n\nopenrowset\n    (\n    bulk 'trip_data_green_csv/**',\n\n    format='csv',\n\n    data_source='nyc_taxi_data_source',\n\n    PARSER_VERSION='2.0',\n\n    HEADER_ROW=True\n\n    ) as result\n\n--  user checking the alloted data type to each feild by using a stored procedure named 'sp_describe_first_result_set'\n\nexec sp_describe_first_result_set N'select * FROM\n\nopenrowset\n    (\n    bulk ''trip_data_green_csv/**'',\n\n    format=''csv'',\n\n    data_source=''nyc_taxi_data_source'',\n\n    PARSER_VERSION=''2.0'',\n\n    HEADER_ROW=True\n\n    ) as result'\n\n\n-- as it can be seen that the data types alloted to the data present in the field is more than what is required,\n\n--  we can change the datatypes so that processing is less loaded. We can also change the name of the columns \n\n-- which do not belong to the camel case format. We can also remove the ehail_fee column as it has only null values.\n\nselect * FROM\n\nopenrowset\n    (\n    bulk 'trip_data_green_csv/**',\n\n    format='csv',\n\n    data_source='nyc_taxi_data_source',\n\n    PARSER_VERSION='2.0',\n\n    HEADER_ROW=True\n\n    )\n\n    WITH\n    (\n        vendor_id tinyint 1,\n\n        lpep_pickup_datetime datetime2(7) 2,\n\n        lpep_dropoff_datetime datetime2(7) 3,\n\n        store_and_fwd_flag varchar(1) 4,\n\n        rate_code_id tinyint 5,\n\n        pu_location_id smallint 6,\n\n        do_location_id smallint 7,\n\n        passenger_count smallint 8,\n\n        trip_distance float 9,\n\n        fare_amount float 10,\n\n        extra float 11,\n\n        mta_tax\tfloat 12,\n\n        tip_amount float 13,\n\n        tolls_amount float 14,\n\n        improvement_surcharge float 16,\n\n        total_amount float 17,\n\n        payment_type tinyint 18,\n\n        trip_type tinyint 19,\n\n        congestion_surcharge float 20\n        \n    ) as result\n\n-- will do the analysis at the end\n\n\n\n\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "discoverydb",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

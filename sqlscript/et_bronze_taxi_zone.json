@@ -1,0 +1,20 @@
+{
+	"name": "et_bronze_taxi_zone",
+	"properties": {
+		"folder": {
+			"name": "Bronze_level_table_creation"
+		},
+		"content": {
+			"query": "-- This external table is created on the ",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

@@ -1,0 +1,20 @@
+{
+	"name": "sp_external_table_taxi_demand",
+	"properties": {
+		"folder": {
+			"name": "presentation_layer_view"
+		},
+		"content": {
+			"query": "use nyc_warehouse\n\nGO\n\ncreate or alter procedure gold.sp_external_table_taxi_demand @year varchar(4), @month varchar(2)\n\nAS\n\nBEGIN\n    declare @variable1 nvarchar(max), @variable2 nvarchar(max);\n\n    set @variable1 = 'create external table gold.ext_table_taxi_demand_' + @year + '_' + @month +\n\n                      ' with(\n\n                        location = ''presentation/taxi_demand/year=' + @year + '/month=' + @month + ''',\n\n                        data_source = nyc_taxi_ds1,\n\n                        file_format = external_file_format_parquet\n\n                      )\n\n                      AS\n\n                        select\n\n                        td.year_of_trip,\n\n                        td.month_of_trip,\n\n                        convert(date,td.lpep_pickup_datetime) as trip_date,\n\n                        cd.day_name,\n\n                        tz.borough,\n\n                        tt.trip_type_description,\n\n                        count(1) as number_of_trips,\n\n                        round(sum(total_amount),2) as sum_trip_fare,\n\n                        round(sum(trip_distance),2) as sum_trip_distance\n\n                        FROM\n\n                        silver.trip_data_vw td join silver.ext_table_calendar cd\n\n                        on convert(date,td.lpep_pickup_datetime)=cd.date\n\n                        join silver.ext_table_payment_type pt\n\n                        on td.payment_type = pt.payment_type_id\n\n                        join silver.ext_table_trip_type tt\n\n                        on td.trip_type = tt.trip_type\n\n                        join silver.ext_table_taxi_zone tz\n\n                        on td.pu_location_id = tz.location_id\n\n                        where td.year_of_trip =' + @year + ' and td.month_of_trip =' + @month + '\n\n                        group by \n\n                        td.year_of_trip,\n\n                        td.month_of_trip,\n\n                        convert(date,td.lpep_pickup_datetime),\n\n                        cd.day_name,\n\n                        tz.borough,\n\n                        tt.trip_type_description';\n\nprint(@variable1);\n\nexec sp_executesql @variable1;\n\nprint(@variable2);\n\nset @variable2 = 'drop external table gold.ext_table_taxi_demand_' + @year + '_' + @month;\n\nexec sp_executesql @variable2;\n\nEND;\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_warehouse",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

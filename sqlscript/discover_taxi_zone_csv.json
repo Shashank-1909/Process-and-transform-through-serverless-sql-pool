@@ -1,0 +1,20 @@
+{
+	"name": "discover_taxi_zone_csv",
+	"properties": {
+		"folder": {
+			"name": "data_discovery"
+		},
+		"content": {
+			"query": "use discoverydb\n\nGO\n\n-- usomg the openrowset function to query the data in taxi_zone.csv file\n\nselect * FROM\n\nopenrowset\n    (\n    bulk 'taxi_zone.csv',\n\n    format='csv',\n\n    data_source='nyc_taxi_data_source',\n\n    PARSER_VERSION='2.0',\n\n    HEADER_ROW=True\n\n    ) as result\n\n--  user checking the alloted data type to each feild by using a stored procedure named 'sp_describe_first_result_set'\n\nexec sp_describe_first_result_set N'select * FROM\n\nopenrowset\n    (\n    bulk ''taxi_zone.csv'',\n\n    format=''csv'',\n\n    data_source=''nyc_taxi_data_source'',\n\n    PARSER_VERSION=''2.0'',\n\n    HEADER_ROW=True\n\n    ) as result'\n\n\n-- as it can be seen that the data types alloted to the data present in the field is more than what is required, we can change the datatypes so that\n\n-- processing is less loaded.\n\nselect * FROM\n\nopenrowset\n    (\n    bulk 'taxi_zone.csv',\n\n    format='csv',\n\n    data_source='nyc_taxi_data_source',\n\n    PARSER_VERSION='2.0',\n\n    HEADER_ROW=True\n\n    )\n\n    WITH\n    (\n        LocationID smallint,\n\n        Borough varchar(15),\n\n        Zone varchar(50),\n\n        service_zone varchar(15)\n    ) as result\n\n-- The names of the columns should have a consistent format, the name could be changed by specifying the column postion\n\nselect * FROM\n\nopenrowset\n    (\n    bulk 'taxi_zone.csv',\n\n    format='csv',\n\n    data_source='nyc_taxi_data_source',\n\n    PARSER_VERSION='2.0',\n\n    FIRSTROW=2\n\n    )\n\n    WITH\n    (\n        location_id smallint 1,\n\n        borough varchar(15) 2,\n\n        zone varchar(50) 3,\n\n        service_zone varchar(15) 4\n\n    ) as result\n\n-- its a good practice to check whether data contains duplicate rows or not\n\nselect location_id,count(1) as count_of_rows\n\nFROM\n\nopenrowset\n    (\n    bulk 'taxi_zone.csv',\n\n    format='csv',\n\n    data_source='nyc_taxi_data_source',\n\n    PARSER_VERSION='2.0',\n\n    HEADER_ROW=True\n    )\n    with\n    (\n    location_id smallint 1,\n\n    borough varchar(15) 2,\n\n    zone varchar(50) 3,\n\n    service_zone varchar(15) 4\n\n    ) as result\n\ngroup by location_id\n\nhaving count(1)>1;\n\n-- finding the distinct number of zones prsent in each borough\n\nselect borough,count(distinct zone) as number_of_zones FROM\n\nopenrowset\n    (\n    bulk 'taxi_zone.csv',\n\n    format='csv',\n\n    data_source='nyc_taxi_data_source',\n\n    PARSER_VERSION='2.0',\n\n    FIRSTROW=2\n\n    )\n\n    WITH\n    (\n        location_id smallint 1,\n\n        borough varchar(15) 2,\n\n        zone varchar(50) 3,\n\n        service_zone varchar(15) 4\n\n    ) as result\n\ngroup by borough order by number_of_zones;\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "discoverydb",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

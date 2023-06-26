@@ -1,0 +1,19 @@
+{
+	"name": "delete_presentation_layer_files",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "nyctaxiprojectws-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "presentation",
+				"fileSystem": "nyctaxiprojectcontainer1"
+			}
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}
